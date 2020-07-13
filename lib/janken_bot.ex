@@ -6,14 +6,20 @@ defmodule JankenBot do
   alias JankenBot.Web
 
   def go() do
-    cookie = get_cookie()
+    cookies = get_cookies()
 
-    cookie
-    |> Web.get_link()
-    |> Web.go(cookie)
+    for cookie <- cookies do
+      case Web.get_link(cookie) do
+        {:ok, link} ->
+          Web.go(link, cookie)
+
+        {:error, _msg} ->
+          nil
+      end
+    end
   end
 
-  def get_cookie() do
-    cookie = Application.get_env(:janken_bot, :cookie)
+  def get_cookies() do
+    Application.get_env(:janken_bot, :cookies, [])
   end
 end

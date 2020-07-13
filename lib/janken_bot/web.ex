@@ -8,20 +8,28 @@ defmodule JankenBot.Web do
       cookie: [cookie]
     ])
 
-    [ first | _ ] = body
+    selects = body
     |> Floki.parse_document!()
     |> Floki.find("#janken-select .inner a")
 
-    [ link ] = first
-    |> Floki.attribute("href")
+    case selects do
+      [] -> 
+        {:error, "already selected"}
 
-    link
+      [ first | _ ] -> 
+        [ link ] = first
+        |> Floki.attribute("href")
+    
+        {:ok, link}
+    end
   end
 
   def go(link, cookie) do
     HTTPoison.get!(@base_url <> link, %{}, hackney: [
       cookie: [cookie]
     ])
+
+    :ok
   end
 
   def get_stamp(cookie) do

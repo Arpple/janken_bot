@@ -4,18 +4,14 @@
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `janken_bot` to your list of dependencies in `mix.exs`:
+config
 
-```elixir
-def deps do
-  [
-    {:janken_bot, "~> 0.1.0"}
-  ]
-end
+create dev config `config/dev.secret.exs`
 ```
+use Mix.Config
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/janken_bot](https://hexdocs.pm/janken_bot).
-
+config :janken_bot,
+  cookies: [
+    "M573SSID=<cookie>",
+  ]
+```
