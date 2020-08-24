@@ -4,8 +4,9 @@ defmodule JankenBot do
   """
 
   alias JankenBot.Web
+  alias JankenBot.Nono
 
-  def go() do
+  def janken() do
     cookies = get_cookies()
 
     for cookie <- cookies do
@@ -16,6 +17,14 @@ defmodule JankenBot do
         {:error, _msg} ->
           nil
       end
+    end
+  end
+
+  def nono() do
+    cookies = get_cookies()
+
+    for cookie <- cookies do
+      Nono.run(cookie)
     end
   end
 
