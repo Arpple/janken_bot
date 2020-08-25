@@ -5,12 +5,18 @@ defmodule JankenBot.Nono do
   @action_url "/game/bemani/wbr2020/01/card_save.html"
 
   def run(cookie) do
-    cookie
-    |> get_token()
-    |> submit(cookie)
+    token = get_token(cookie)
+
+    case token do
+      {:ok, token} ->
+        submit(token, cookie)
+
+      error ->
+        error
+    end
   end
 
-  def get_token(cookie) do
+  defp get_token(cookie) do
     %{ body: body } = HTTPoison.get!(
       @base_url <> @index,
       [
@@ -20,14 +26,21 @@ defmodule JankenBot.Nono do
       ]
     )
 
-    [token] = body
+    token_values = body
     |> Floki.parse_document!()
     |> Floki.find("#id_initial_token")
     |> Floki.attribute("value")
+
+    case token_values do
+      [] ->
+        {:error, "cannot find token"}
+
+      [token] ->
+        {:ok, token}
+    end
   end
 
-  def submit(token, cookie) do
-    IO.inspect(cookie)
+  defp submit(token, cookie) do
     %{ body: body } = HTTPoison.post!(
       @base_url <> @action_url,
       "c_type=1&c_id=0&t_id=#{token}",
@@ -39,6 +52,6 @@ defmodule JankenBot.Nono do
       ]
     )
 
-    Floki.parse_document!(body)
+    :ok
   end
 end

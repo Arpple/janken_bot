@@ -3,29 +3,17 @@ defmodule JankenBot do
   Documentation for `JankenBot`.
   """
 
-  alias JankenBot.Web
+  alias JankenBot.Janken
   alias JankenBot.Nono
 
   def janken() do
-    cookies = get_cookies()
-
-    for cookie <- cookies do
-      case Web.get_link(cookie) do
-        {:ok, link} ->
-          Web.go(link, cookie)
-
-        {:error, _msg} ->
-          nil
-      end
-    end
+    get_cookies()
+    |> Enum.map(&Janken.run/1)
   end
 
   def nono() do
-    cookies = get_cookies()
-
-    for cookie <- cookies do
-      Nono.run(cookie)
-    end
+    get_cookies()
+    |> Enum.map(&Nono.run/1)
   end
 
   def get_cookies() do

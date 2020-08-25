@@ -1,15 +1,23 @@
-defmodule JankenBot.Web do
+defmodule JankenBot.Janken do
   @base_url "https://p.eagate.573.jp"
 
   @index "/game/bemani/bjm2020/janken/index.html"
 
-  def get_link(cookie) do
-    %{ body: body } = HTTPoison.get!(@base_url <> @index, %{}, hackney: [
-      cookie: [cookie]
-    ])
+  def run(cookie) do
+    link = get_event_page(cookie)
+    |> get_submit_link()
+    
+    case link do
+      {:ok, link} ->
+        submit(link, cookie)
 
-    selects = body
-    |> Floki.parse_document!()
+      {:error, _msg} ->
+        nil
+    end
+  end
+
+  defp get_submit_link(event_page) do
+    selects = event_page
     |> Floki.find("#janken-select .inner a")
 
     case selects do
@@ -24,7 +32,15 @@ defmodule JankenBot.Web do
     end
   end
 
-  def go(link, cookie) do
+  defp get_event_page(cookie) do
+    %{ body: body } = HTTPoison.get!(@base_url <> @index, %{}, hackney: [
+      cookie: [cookie]
+    ])
+
+    Floki.parse_document!(body)
+  end
+
+  defp submit(link, cookie) do
     HTTPoison.get!(@base_url <> link, %{}, hackney: [
       cookie: [cookie]
     ])
