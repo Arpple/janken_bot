@@ -5,18 +5,20 @@ defmodule JankenBot.Nono do
   @action_url "/game/bemani/wbr2020/01/card_save.html"
 
   def run(cookie) do
-    token = get_token(cookie)
+    event_page = get_event_page(cookie)
+    token = get_token(event_page)
+    card_type = get_card_type(event_page)
 
     case token do
       {:ok, token} ->
-        submit(token, cookie)
+        submit(token, card_type, cookie)
 
       error ->
         error
     end
   end
 
-  defp get_token(cookie) do
+  defp get_event_page(cookie) do
     %{ body: body } = HTTPoison.get!(
       @base_url <> @index,
       [
@@ -26,8 +28,12 @@ defmodule JankenBot.Nono do
       ]
     )
 
-    token_values = body
+    body
     |> Floki.parse_document!()
+  end
+  
+  defp get_token(event_page) do
+    token_values = event_page
     |> Floki.find("#id_initial_token")
     |> Floki.attribute("value")
 
@@ -40,10 +46,14 @@ defmodule JankenBot.Nono do
     end
   end
 
-  defp submit(token, cookie) do
+  defp get_card_type(event_page) do
+    "1" # TODO: read from image name
+  end
+
+  defp submit(token, card_type, cookie) do
     %{ body: body } = HTTPoison.post!(
       @base_url <> @action_url,
-      "c_type=1&c_id=0&t_id=#{token}",
+      "c_type=#{card_type}&c_id=0&t_id=#{token}",
       [
         {"Cookie", cookie},
         {"Content-Type", "application/x-www-form-urlencoded"},
