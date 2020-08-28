@@ -11,7 +11,9 @@ defmodule JankenBot.Nono do
 
     case token do
       {:ok, token} ->
-        submit(token, card_type, cookie)
+        Enum.map(["1", "2", "3"], fn card_type ->
+          submit(token, card_type, cookie)
+        end)
 
       error ->
         error
